@@ -1,6 +1,23 @@
 [package]
-name = "bounds"
+name = "lset"
 version = "0.1.0"
 authors = ["Nathaniel McCallum <npmccallum@redhat.com>"]
 edition = "2018"
 license = "Apache-2.0"
+homepage = "https://github.com/enarx/lset"
+repository = "https://github.com/enarx/lset"
+description = "Data types describing linear sets"
+readme = "README.md"
+keywords = ["linear", "sets", "line", "span"]
+categories = ["development-tools", "rust-patterns"]
+exclude = [ ".gitignore", ".github/*" ]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[badges]
+# See https://doc.rust-lang.org/cargo/reference/manifest.html#the-badges-section
+github = { repository = "enarx/lset", workflow = "test" }
+#github = { repository = "enarx/lset", workflow = "lint" }
+maintenance = { status = "actively-developed" }
+is-it-maintained-issue-resolution = { repository = "enarx/lset" }
+is-it-maintained-open-issues = { repository = "enarx/lset" }

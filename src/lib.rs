@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 //! This crate contains types for measuring linear sets by either the end
-//! points (`Bounds`) or by a starting point and the number of elements (`Span`).
+//! points (`Line`) or by a starting point and the number of elements (`Span`).
 //!
 //! In the interest of zero-cost abstractions, all methods are always inlined
 //! for maximum compiler optimization. Thus, you only pay for the conversions
