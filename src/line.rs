@@ -18,6 +18,22 @@ pub struct Line<T> {
     pub end: T,
 }
 
+impl<T> Line<T> {
+    /// Create a new line
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let line = lset::Line::new(5, 10);
+    /// assert_eq!(line.start, 5);
+    /// assert_eq!(line.end, 10);
+    /// ```
+    #[inline(always)]
+    pub const fn new(start: T, end: T) -> Self {
+        Self { start, end }
+    }
+}
+
 impl<T> From<Range<T>> for Line<T> {
     #[inline(always)]
     fn from(value: Range<T>) -> Self {
