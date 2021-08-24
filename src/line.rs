@@ -34,6 +34,164 @@ impl<T> Line<T> {
     }
 }
 
+/// Grows the line by the size of the operand
+///
+/// # Example
+///
+/// ```
+/// let before = lset::Line::new(5, 10);
+/// let after = before + 5;
+/// assert_eq!(after.start, 5);
+/// assert_eq!(after.end, 15);
+/// ```
+impl<T: Add<T, Output = T>> Add<T> for Line<T> {
+    type Output = Self;
+
+    #[inline(always)]
+    fn add(self, rhs: T) -> Self::Output {
+        Self {
+            start: self.start,
+            end: self.end + rhs,
+        }
+    }
+}
+
+/// Grows the line by the size of the operand
+///
+/// # Example
+///
+/// ```
+/// let mut line = lset::Line::new(5, 10);
+/// line += 5;
+/// assert_eq!(line.start, 5);
+/// assert_eq!(line.end, 15);
+/// ```
+impl<T: AddAssign<T>> AddAssign<T> for Line<T> {
+    #[inline(always)]
+    fn add_assign(&mut self, rhs: T) {
+        self.end += rhs;
+    }
+}
+
+/// Shrinks the line by the size of the operand
+///
+/// # Example
+///
+/// ```
+/// let before = lset::Line::new(5, 10);
+/// let after = before - 5;
+/// assert_eq!(after.start, 5);
+/// assert_eq!(after.end, 5);
+/// ```
+impl<T: Sub<T, Output = T>> Sub<T> for Line<T> {
+    type Output = Self;
+
+    #[inline(always)]
+    fn sub(self, rhs: T) -> Self::Output {
+        Self {
+            start: self.start,
+            end: self.end - rhs,
+        }
+    }
+}
+
+/// Shrinks the line by the size of the operand
+///
+/// # Example
+///
+/// ```
+/// let mut line = lset::Line::new(5, 10);
+/// line -= 5;
+/// assert_eq!(line.start, 5);
+/// assert_eq!(line.end, 5);
+/// ```
+impl<T: SubAssign<T>> SubAssign<T> for Line<T> {
+    #[inline(always)]
+    fn sub_assign(&mut self, rhs: T) {
+        self.end -= rhs;
+    }
+}
+
+/// Shifts the line downwards without changing size
+///
+/// # Example
+///
+/// ```
+/// let before = lset::Line::new(5, 10);
+/// let after = before << 5;
+/// assert_eq!(after.start, 0);
+/// assert_eq!(after.end, 5);
+/// ```
+impl<T: Copy + Sub<T, Output = T>> Shl<T> for Line<T> {
+    type Output = Self;
+
+    #[inline(always)]
+    fn shl(self, rhs: T) -> Self::Output {
+        Self {
+            start: self.start - rhs,
+            end: self.end - rhs,
+        }
+    }
+}
+
+/// Shifts the line downwards without changing size
+///
+/// # Example
+///
+/// ```
+/// let mut line = lset::Line::new(5, 10);
+/// line <<= 5;
+/// assert_eq!(line.start, 0);
+/// assert_eq!(line.end, 5);
+/// ```
+impl<T: Copy + SubAssign<T>> ShlAssign<T> for Line<T> {
+    #[inline(always)]
+    fn shl_assign(&mut self, rhs: T) {
+        self.start -= rhs;
+        self.end -= rhs;
+    }
+}
+
+/// Shifts the line upwards without changing size
+///
+/// # Example
+///
+/// ```
+/// let before = lset::Line::new(5, 10);
+/// let after = before >> 5;
+/// assert_eq!(after.start, 10);
+/// assert_eq!(after.end, 15);
+/// ```
+impl<T: Copy + Add<T, Output = T>> Shr<T> for Line<T> {
+    type Output = Self;
+
+    #[inline(always)]
+    fn shr(self, rhs: T) -> Self::Output {
+        Self {
+            start: self.start + rhs,
+            end: self.end + rhs,
+        }
+    }
+}
+
+/// Shifts the line upwards without changing size
+///
+/// # Example
+///
+/// ```
+/// let mut line = lset::Line::new(5, 10);
+/// line >>= 5;
+/// assert_eq!(line.start, 10);
+/// assert_eq!(line.end, 15);
+/// ```
+impl<T: Copy + AddAssign<T>> ShrAssign<T> for Line<T> {
+    #[inline(always)]
+    fn shr_assign(&mut self, rhs: T) {
+        self.start += rhs;
+        self.end += rhs;
+    }
+}
+
 impl<T> From<Range<T>> for Line<T> {
     #[inline(always)]
     fn from(value: Range<T>) -> Self {
