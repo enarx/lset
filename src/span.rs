@@ -18,6 +18,22 @@ pub struct Span<T, U = T> {
     pub count: U,
 }
 
+impl<T, U> Span<T, U> {
+    /// Create a new span
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let span = lset::Span::new(5, 10);
+    /// assert_eq!(span.start, 5);
+    /// assert_eq!(span.count, 10);
+    /// ```
+    #[inline(always)]
+    pub const fn new(start: T, count: U) -> Self {
+        Self { start, count }
+    }
+}
+
 impl<T: Copy + Sub<T, Output = U>, U> From<Range<T>> for Span<T, U> {
     #[inline(always)]
     fn from(value: Range<T>) -> Self {
