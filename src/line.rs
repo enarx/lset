@@ -230,6 +230,25 @@ impl<T> From<Line<T>> for Range<T> {
     }
 }
 
+/// Converts a `Span` into a `Line`
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert_eq!(Line::new(5, 10), Line::from(Span::new(5, 5)));
+/// assert_eq!(Line::new(5, 10), Span::new(5, 5).into());
+/// ```
+impl<T: Clone + Add<U, Output = T>, U> From<Span<T, U>> for Line<T> {
+    #[inline(always)]
+    fn from(value: Span<T, U>) -> Self {
+        Self {
+            start: value.start.clone(),
+            end: value.start + value.count,
+        }
+    }
+}
+
 impl<T: PartialOrd> Contains<T> for Line<T> {
     #[inline(always)]
     fn contains(&self, value: &T) -> bool {
