@@ -251,25 +251,6 @@ impl<T: Clone + Sub<T, Output = U>, U> From<Line<T>> for Span<T, U> {
     }
 }
 
-/// Converts a `Span` into a `Line`
-///
-/// # Example
-///
-/// ```
-/// use lset::*;
-/// assert_eq!(Line::new(5, 10), Line::from(Span::new(5, 5)));
-/// assert_eq!(Line::new(5, 10), Span::new(5, 5).into());
-/// ```
-impl<T: Clone + Add<U, Output = T>, U> From<Span<T, U>> for Line<T> {
-    #[inline(always)]
-    fn from(value: Span<T, U>) -> Self {
-        Self {
-            start: value.start.clone(),
-            end: value.start + value.count,
-        }
-    }
-}
-
 impl<T, U> Contains<T> for Span<T, U>
 where
     Self: Into<Line<T>> + Clone,
