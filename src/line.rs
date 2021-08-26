@@ -192,6 +192,15 @@ impl<T: Copy + AddAssign<T>> ShrAssign<T> for Line<T> {
     }
 }
 
+/// Converts a `Range` into a `Line`
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert_eq!(Line::new(5, 10), Line::from(5..10));
+/// assert_eq!(Line::new(5, 10), (5..10).into());
+/// ```
 impl<T> From<Range<T>> for Line<T> {
     #[inline(always)]
     fn from(value: Range<T>) -> Self {
@@ -202,6 +211,15 @@ impl<T> From<Range<T>> for Line<T> {
     }
 }
 
+/// Converts a `Line` into a `Range`
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert_eq!(5..10, std::ops::Range::from(Line::new(5, 10)));
+/// assert_eq!(5..10, Line::new(5, 10).into());
+/// ```
 impl<T> From<Line<T>> for Range<T> {
     #[inline(always)]
     fn from(value: Line<T>) -> Self {
