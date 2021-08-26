@@ -194,6 +194,15 @@ impl<T: Copy + AddAssign<T>> ShrAssign<T> for Span<T> {
     }
 }
 
+/// Converts a `Range` into a `Span`
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert_eq!(Span::new(5, 10), Span::from(5..15));
+/// assert_eq!(Span::new(5, 10), (5..15).into());
+/// ```
 impl<T: Copy + Sub<T, Output = U>, U> From<Range<T>> for Span<T, U> {
     #[inline(always)]
     fn from(value: Range<T>) -> Self {
@@ -204,6 +213,15 @@ impl<T: Copy + Sub<T, Output = U>, U> From<Range<T>> for Span<T, U> {
     }
 }
 
+/// Converts a `Span` into a `Range`
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert_eq!(5..15, std::ops::Range::from(Span::new(5, 10)));
+/// assert_eq!(5..15, Span::new(5, 10).into());
+/// ```
 impl<T: Clone + Add<U, Output = T>, U> From<Span<T, U>> for Range<T> {
     #[inline(always)]
     fn from(value: Span<T, U>) -> Self {
@@ -214,6 +232,15 @@ impl<T: Clone + Add<U, Output = T>, U> From<Span<T, U>> for Range<T> {
     }
 }
 
+/// Converts a `Line` into a `Span`
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert_eq!(Span::new(5, 10), Span::from(Line::new(5, 15)));
+/// assert_eq!(Span::new(5, 10), (Line::new(5, 15)).into());
+/// ```
 impl<T: Clone + Sub<T, Output = U>, U> From<Line<T>> for Span<T, U> {
     #[inline(always)]
     fn from(value: Line<T>) -> Self {
@@ -224,6 +251,15 @@ impl<T: Clone + Sub<T, Output = U>, U> From<Line<T>> for Span<T, U> {
     }
 }
 
+/// Converts a `Span` into a `Line`
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert_eq!(Line::new(5, 10), Line::from(Span::new(5, 5)));
+/// assert_eq!(Line::new(5, 10), Span::new(5, 5).into());
+/// ```
 impl<T: Clone + Add<U, Output = T>, U> From<Span<T, U>> for Line<T> {
     #[inline(always)]
     fn from(value: Span<T, U>) -> Self {
