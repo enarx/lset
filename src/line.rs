@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::*;
-use core::ops::*;
+use core::{cmp::Ordering, ops::*};
 
 /// Expresses a linear set by its starting and termination points
 ///
@@ -189,6 +189,31 @@ impl<T: Copy + AddAssign<T>> ShrAssign<T> for Line<T> {
     fn shr_assign(&mut self, rhs: T) {
         self.start += rhs;
         self.end += rhs;
+    }
+}
+
+/// Compares two `Line` types.
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert!(Line::new(5, 10) <= Line::new(5, 10));
+/// assert!(Line::new(5, 10) >= Line::new(5, 10));
+/// assert!(Line::new(5, 10) < Line::new(10, 15));
+/// assert!(Line::new(10, 15) > Line::new(5, 10));
+/// ```
+impl<T: PartialOrd> PartialOrd for Line<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        if self == other {
+            Some(Ordering::Equal)
+        } else if self.start >= other.end {
+            Some(Ordering::Greater)
+        } else if self.end <= other.start {
+            Some(Ordering::Less)
+        } else {
+            None
+        }
     }
 }
 
