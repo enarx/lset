@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::*;
-use core::ops::*;
+use core::{cmp::Ordering, ops::*};
 
 /// Expresses a linear set by its start element and number of elements.
 ///
@@ -191,6 +191,27 @@ impl<T: Copy + AddAssign<T>> ShrAssign<T> for Span<T> {
     #[allow(clippy::suspicious_op_assign_impl)]
     fn shr_assign(&mut self, rhs: T) {
         self.start += rhs;
+    }
+}
+
+/// Compares two `Span` types.
+///
+/// # Example
+///
+/// ```
+/// use lset::*;
+/// assert!(Span::new(5, 5) <= Span::new(5, 5));
+/// assert!(Span::new(5, 5) >= Span::new(5, 5));
+/// assert!(Span::new(5, 5) < Span::new(10, 5));
+/// assert!(Span::new(10, 5) > Span::new(5, 5));
+/// ```
+impl<T: PartialEq, U: PartialEq> PartialOrd for Span<T, U>
+where
+    Span<T, U>: Copy + Into<Line<T>>,
+    Line<T>: PartialOrd,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        (*self).into().partial_cmp(&(*other).into())
     }
 }
 
