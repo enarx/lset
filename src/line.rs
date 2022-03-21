@@ -34,6 +34,45 @@ impl<T> Line<T> {
     }
 }
 
+impl<T: PartialOrd> Line<T> {
+    /// Returns the intersection between the sets, if any.
+    ///
+    /// ```
+    /// use lset::*;
+    ///
+    /// let a = Line::new(0, 5);
+    /// let b = Line::new(2, 7);
+    /// let c = Line::new(5, 10);
+    ///
+    /// assert_eq!(a.intersection(b), Some(Line::new(2, 5)));
+    /// assert_eq!(b.intersection(c), Some(Line::new(5, 7)));
+    /// assert_eq!(a.intersection(a), Some(a));
+    /// assert_eq!(b.intersection(b), Some(b));
+    /// assert_eq!(c.intersection(c), Some(c));
+    /// assert_eq!(a.intersection(c), None);
+    /// ```
+    pub fn intersection(self, other: Self) -> Option<Self> {
+        let start = if other.start >= self.start && other.start < self.end {
+            Some(other.start)
+        } else {
+            None
+        };
+
+        let end = if other.end > self.start && other.end <= self.end {
+            Some(other.end)
+        } else {
+            None
+        };
+
+        match (start, end) {
+            (Some(start), Some(end)) => Some(Line::new(start, end)),
+            (Some(start), None) => Some(Line::new(start, self.end)),
+            (None, Some(end)) => Some(Line::new(self.start, end)),
+            (None, None) => None,
+        }
+    }
+}
+
 /// Grows the line by the size of the operand
 ///
 /// # Example
