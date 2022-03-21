@@ -34,6 +34,32 @@ impl<T, U> Span<T, U> {
     }
 }
 
+impl<T, U> Span<T, U>
+where
+    Span<T, U>: Into<Line<T>> + From<Line<T>>,
+    T: PartialOrd,
+{
+    /// Returns the intersection between the sets, if any.
+    ///
+    /// ```
+    /// use lset::*;
+    ///
+    /// let a = Span::new(0, 5);
+    /// let b = Span::new(2, 5);
+    /// let c = Span::new(5, 5);
+    ///
+    /// assert_eq!(a.intersection(b), Some(Span::new(2, 3)));
+    /// assert_eq!(b.intersection(c), Some(Span::new(5, 2)));
+    /// assert_eq!(a.intersection(a), Some(a));
+    /// assert_eq!(b.intersection(b), Some(b));
+    /// assert_eq!(c.intersection(c), Some(c));
+    /// assert_eq!(a.intersection(c), None);
+    /// ```
+    pub fn intersection(self, other: Self) -> Option<Self> {
+        self.into().intersection(other.into()).map(|x| x.into())
+    }
+}
+
 /// Grows the line by the size of the operand
 ///
 /// # Example
