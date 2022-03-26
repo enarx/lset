@@ -303,6 +303,20 @@ where
     Self: Into<Line<T>> + Clone,
     Line<T>: Contains<T>,
 {
+    /// Indicates whether the span contains a point
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// assert!(!Span::from(2..3).contains(&1));
+    /// assert!(Span::from(2..3).contains(&2));
+    /// assert!(!Span::from(2..3).contains(&3));
+
+    /// assert!(!Span::from(3..2).contains(&1));
+    /// assert!(!Span::from(3..2).contains(&2));
+    /// assert!(!Span::from(3..2).contains(&3));
+    /// ```
     #[inline(always)]
     fn contains(&self, value: &T) -> bool {
         self.clone().into().contains(value)
@@ -314,6 +328,23 @@ where
     Self: Into<Line<T>> + Clone,
     T: PartialOrd,
 {
+    /// Indicates whether the span contains another span
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// assert!(Span::from(4..8).contains(&Span::from(5..7)));
+    /// assert!(Span::from(4..8).contains(&Span::from(4..7)));
+    /// assert!(Span::from(4..8).contains(&Span::from(5..8)));
+    /// assert!(Span::from(4..8).contains(&Span::from(4..8)));
+    /// assert!(!Span::from(4..8).contains(&Span::from(3..8)));
+    /// assert!(!Span::from(4..8).contains(&Span::from(4..9)));
+    /// assert!(!Span::from(4..8).contains(&Span::from(3..9)));
+    /// assert!(!Span::from(4..8).contains(&Span::from(2..10)));
+    /// assert!(!Span::from(4..8).contains(&Span::from(6..5)));
+    /// assert!(!Span::from(7..3).contains(&Span::from(5..6)));
+    /// ```
     #[inline(always)]
     fn contains(&self, value: &Self) -> bool {
         self.clone().into().contains(&value.clone().into())
@@ -379,26 +410,6 @@ mod test {
 
         assert_eq!(line, span.into());
         assert_eq!(span, line.into());
-    }
-
-    #[test]
-    #[allow(clippy::reversed_empty_ranges)]
-    fn contains() {
-        assert!(!x!(2..3).contains(&1));
-        assert!(x!(2..3).contains(&2));
-        assert!(!x!(2..3).contains(&3));
-
-        assert!(!x!(3..2).contains(&1));
-        assert!(!x!(3..2).contains(&2));
-        assert!(x!(3..2).contains(&3));
-
-        assert!(x!(0..9).contains(&x!(2..4)));
-        assert!(!x!(0..9).contains(&x!(2..14)));
-        assert!(!x!(0..9).contains(&x!(12..14)));
-
-        assert!(x!(8..3).contains(&x!(5..7)));
-        assert!(!x!(8..3).contains(&x!(5..17)));
-        assert!(!x!(8..3).contains(&x!(15..17)));
     }
 
     #[test]

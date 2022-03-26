@@ -314,20 +314,55 @@ impl<T: Clone + Add<U, Output = T>, U> From<Span<T, U>> for Line<T> {
 }
 
 impl<T: PartialOrd> Contains<T> for Line<T> {
+    /// Indicates whether the line contains a point
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// assert!(!Line::from(2..3).contains(&1));
+    /// assert!(Line::from(2..3).contains(&2));
+    /// assert!(!Line::from(2..3).contains(&3));
+
+    /// assert!(!Line::from(3..2).contains(&1));
+    /// assert!(!Line::from(3..2).contains(&2));
+    /// assert!(!Line::from(3..2).contains(&3));
+    /// ```
     #[inline(always)]
     fn contains(&self, value: &T) -> bool {
-        if self.start < self.end {
+        if self.start <= self.end {
             &self.start <= value && value < &self.end
         } else {
-            &self.start >= value && value > &self.end
+            false
         }
     }
 }
 
 impl<T: PartialOrd> Contains<Self> for Line<T> {
+    /// Indicates whether the line contains another line
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// assert!(Line::from(4..8).contains(&Line::from(5..7)));
+    /// assert!(Line::from(4..8).contains(&Line::from(4..7)));
+    /// assert!(Line::from(4..8).contains(&Line::from(5..8)));
+    /// assert!(Line::from(4..8).contains(&Line::from(4..8)));
+    /// assert!(!Line::from(4..8).contains(&Line::from(3..8)));
+    /// assert!(!Line::from(4..8).contains(&Line::from(4..9)));
+    /// assert!(!Line::from(4..8).contains(&Line::from(3..9)));
+    /// assert!(!Line::from(4..8).contains(&Line::from(2..10)));
+    /// assert!(!Line::from(4..8).contains(&Line::from(6..5)));
+    /// assert!(!Line::from(7..3).contains(&Line::from(5..6)));
+    /// ```
     #[inline(always)]
     fn contains(&self, value: &Self) -> bool {
-        self.contains(&value.start) && self.contains(&value.end)
+        if self.start <= self.end && value.start <= value.end {
+            self.start <= value.start && value.end <= self.end
+        } else {
+            false
+        }
     }
 }
 
@@ -387,29 +422,6 @@ mod test {
 
         assert_eq!(range, line.into());
         assert_eq!(line, range.into());
-    }
-
-    #[test]
-    #[allow(clippy::reversed_empty_ranges)]
-    fn contains() {
-        assert!(!x!(2..3).contains(&1));
-        assert!(x!(2..3).contains(&2));
-        assert!(!x!(2..3).contains(&3));
-
-        assert!(!x!(3..2).contains(&1));
-        assert!(!x!(3..2).contains(&2));
-        assert!(x!(3..2).contains(&3));
-
-        assert!(x!(0..9).contains(&x!(2..4)));
-        assert!(x!(0..9).contains(&x!(0..0)));
-        assert!(x!(0..9).contains(&x!(5..5)));
-        assert!(!x!(0..9).contains(&x!(9..9)));
-        assert!(!x!(0..9).contains(&x!(2..14)));
-        assert!(!x!(0..9).contains(&x!(12..14)));
-
-        assert!(x!(8..3).contains(&x!(5..7)));
-        assert!(!x!(8..3).contains(&x!(5..17)));
-        assert!(!x!(8..3).contains(&x!(15..17)));
     }
 
     #[test]
