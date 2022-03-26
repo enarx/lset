@@ -374,13 +374,31 @@ impl<T: PartialEq> Empty for Line<T> {
 }
 
 impl<T: PartialOrd> Split<Self> for Line<T> {
+    /// Splits a line by another line
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// let line = Line::from(2..5);
+    /// assert_eq!(line.split(Line::from(1..4)), None);
+    /// assert_eq!(line.split(Line::from(3..6)), None);
+    /// assert_eq!(line.split(Line::from(2..2)), None);
+    /// assert_eq!(line.split(Line::from(2..3)), Some((Line::from(2..2), Line::from(3..5))));
+    /// assert_eq!(line.split(Line::from(3..3)), None);
+    /// assert_eq!(line.split(Line::from(3..4)), Some((Line::from(2..3), Line::from(4..5))));
+    /// assert_eq!(line.split(Line::from(4..4)), None);
+    /// assert_eq!(line.split(Line::from(4..5)), Some((Line::from(2..4), Line::from(5..5))));
+    /// assert_eq!(line.split(Line::from(5..5)), None);
+    /// assert_eq!(line.split(line), Some((Line::from(2..2), Line::from(5..5))));
+    /// ```
     #[inline(always)]
     fn split(self, at: Self) -> Option<(Self, Self)> {
-        if !self.contains(&at.start) && at.start != self.end {
+        if at.start == at.end {
             return None;
         }
 
-        if !self.contains(&at.end) && at.end != self.end {
+        if !self.contains(&at) {
             return None;
         }
 
@@ -399,9 +417,36 @@ impl<T: PartialOrd> Split<Self> for Line<T> {
 }
 
 impl<T: PartialOrd + Copy> Split<T> for Line<T> {
+    /// Splits a line at a point
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// let line = Line::from(2..4);
+    /// assert_eq!(line.split(1), None);
+    /// assert_eq!(line.split(2), Some((Line::from(2..2), line)));
+    /// assert_eq!(line.split(3), Some((Line::from(2..3), Line::from(3..4))));
+    /// assert_eq!(line.split(4), Some((line, Line::from(4..4))));
+    /// assert_eq!(line.split(5), None);
+    /// ```
     #[inline(always)]
     fn split(self, at: T) -> Option<(Self, Self)> {
-        self.split(Self { start: at, end: at })
+        if at < self.start || at > self.end {
+            return None;
+        }
+
+        let l = Self {
+            start: self.start,
+            end: at,
+        };
+
+        let r = Self {
+            start: at,
+            end: self.end,
+        };
+
+        Some((l, r))
     }
 }
 
@@ -428,23 +473,5 @@ mod test {
     fn is_empty() {
         assert!(x!(2..2).is_empty());
         assert!(!x!(2..3).is_empty());
-    }
-
-    #[test]
-    fn split() {
-        assert_eq!(x!(2..4).split(1), None);
-        assert_eq!(x!(2..4).split(2), Some((x!(2..2), x!(2..4))));
-        assert_eq!(x!(2..4).split(3), Some((x!(2..3), x!(3..4))));
-        assert_eq!(x!(2..4).split(4), Some((x!(2..4), x!(4..4))));
-        assert_eq!(x!(2..4).split(5), None);
-
-        assert_eq!(x!(2..5).split(x!(1..4)), None);
-        assert_eq!(x!(2..5).split(x!(3..6)), None);
-        assert_eq!(x!(2..5).split(x!(2..2)), Some((x!(2..2), x!(2..5))));
-        assert_eq!(x!(2..5).split(x!(2..3)), Some((x!(2..2), x!(3..5))));
-        assert_eq!(x!(2..5).split(x!(3..3)), Some((x!(2..3), x!(3..5))));
-        assert_eq!(x!(2..5).split(x!(3..4)), Some((x!(2..3), x!(4..5))));
-        assert_eq!(x!(2..5).split(x!(4..5)), Some((x!(2..4), x!(5..5))));
-        assert_eq!(x!(2..5).split(x!(5..5)), Some((x!(2..5), x!(5..5))));
     }
 }

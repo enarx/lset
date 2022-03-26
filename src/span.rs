@@ -368,6 +368,24 @@ where
     Line<T>: Into<Self>,
     Line<T>: Split<Line<T>>,
 {
+    /// Splits a span by another span
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// let span = Span::from(2..5);
+    /// assert_eq!(span.split(Span::from(1..4)), None);
+    /// assert_eq!(span.split(Span::from(3..6)), None);
+    /// assert_eq!(span.split(Span::from(2..2)), None);
+    /// assert_eq!(span.split(Span::from(2..3)), Some((Span::from(2..2), Span::from(3..5))));
+    /// assert_eq!(span.split(Span::from(3..3)), None);
+    /// assert_eq!(span.split(Span::from(3..4)), Some((Span::from(2..3), Span::from(4..5))));
+    /// assert_eq!(span.split(Span::from(4..4)), None);
+    /// assert_eq!(span.split(Span::from(4..5)), Some((Span::from(2..4), Span::from(5..5))));
+    /// assert_eq!(span.split(Span::from(5..5)), None);
+    /// assert_eq!(span.split(span), Some((Span::from(2..2), Span::from(5..5))));
+    /// ```
     #[inline(always)]
     fn split(self, at: Self) -> Option<(Self, Self)> {
         let (l, r) = self.into().split(at.into())?;
@@ -381,6 +399,18 @@ where
     Line<T>: Split<T> + Into<Self>,
     Self: Into<Line<T>>,
 {
+    /// Splits a span at a offset
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// let span = Span::from(2..4);
+    /// assert_eq!(span.split(0), Some((Span::from(2..2), span)));
+    /// assert_eq!(span.split(1), Some((Span::from(2..3), Span::from(3..4))));
+    /// assert_eq!(span.split(2), Some((span, Span::from(4..4))));
+    /// assert_eq!(span.split(3), None);
+    /// ```
     #[inline(always)]
     fn split(self, at: U) -> Option<(Self, Self)> {
         let e = self.start.clone() + at;
@@ -416,22 +446,5 @@ mod test {
     fn is_empty() {
         assert!(x!(2..2).is_empty());
         assert!(!x!(2..3).is_empty());
-    }
-
-    #[test]
-    fn split() {
-        assert_eq!(x!(2..4).split(0), Some((x!(2..2), x!(2..4))));
-        assert_eq!(x!(2..4).split(1), Some((x!(2..3), x!(3..4))));
-        assert_eq!(x!(2..4).split(2), Some((x!(2..4), x!(4..4))));
-        assert_eq!(x!(2..4).split(3), None);
-
-        assert_eq!(x!(2..5).split(x!(1..4)), None);
-        assert_eq!(x!(2..5).split(x!(3..6)), None);
-        assert_eq!(x!(2..5).split(x!(2..2)), Some((x!(2..2), x!(2..5))));
-        assert_eq!(x!(2..5).split(x!(2..3)), Some((x!(2..2), x!(3..5))));
-        assert_eq!(x!(2..5).split(x!(3..3)), Some((x!(2..3), x!(3..5))));
-        assert_eq!(x!(2..5).split(x!(3..4)), Some((x!(2..3), x!(4..5))));
-        assert_eq!(x!(2..5).split(x!(4..5)), Some((x!(2..4), x!(5..5))));
-        assert_eq!(x!(2..5).split(x!(5..5)), Some((x!(2..5), x!(5..5))));
     }
 }
