@@ -425,21 +425,3 @@ where
         Some((l.into(), r.into()))
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn convert() {
-        let range = 2..3;
-        let line = Line { start: 2, end: 3 };
-        let span = Span { start: 2, count: 1 };
-
-        assert_eq!(range, span.into());
-        assert_eq!(span, range.into());
-
-        assert_eq!(line, span.into());
-        assert_eq!(span, line.into());
-    }
-}

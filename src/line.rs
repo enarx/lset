@@ -459,17 +459,3 @@ impl<T: PartialOrd + Copy> Split<T> for Line<T> {
         Some((l, r))
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn convert() {
-        let range = 2..3;
-        let line = Line { start: 2, end: 3 };
-
-        assert_eq!(range, line.into());
-        assert_eq!(line, range.into());
-    }
-}
