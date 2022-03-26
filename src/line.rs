@@ -32,6 +32,23 @@ impl<T> Line<T> {
     pub const fn new(start: T, end: T) -> Self {
         Self { start, end }
     }
+
+    /// Indicates whether the line is empty
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// assert!(Line::from(2..2).is_empty());
+    /// assert!(!Line::from(2..3).is_empty());
+    /// ```
+    #[inline(always)]
+    pub fn is_empty(&self) -> bool
+    where
+        T: PartialEq,
+    {
+        self.start == self.end
+    }
 }
 
 impl<T: PartialOrd> Line<T> {
@@ -366,13 +383,6 @@ impl<T: PartialOrd> Contains<Self> for Line<T> {
     }
 }
 
-impl<T: PartialEq> Empty for Line<T> {
-    #[inline(always)]
-    fn is_empty(&self) -> bool {
-        self.start == self.end
-    }
-}
-
 impl<T: PartialOrd> Split<Self> for Line<T> {
     /// Splits a line by another line
     ///
@@ -454,12 +464,6 @@ impl<T: PartialOrd + Copy> Split<T> for Line<T> {
 mod test {
     use super::*;
 
-    macro_rules! x {
-        ($range:expr) => {
-            Line::from($range)
-        };
-    }
-
     #[test]
     fn convert() {
         let range = 2..3;
@@ -467,11 +471,5 @@ mod test {
 
         assert_eq!(range, line.into());
         assert_eq!(line, range.into());
-    }
-
-    #[test]
-    fn is_empty() {
-        assert!(x!(2..2).is_empty());
-        assert!(!x!(2..3).is_empty());
     }
 }

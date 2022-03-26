@@ -23,12 +23,6 @@ pub trait Contains<T> {
     fn contains(&self, value: &T) -> bool;
 }
 
-/// A trait for determining whether a set is empty
-pub trait Empty {
-    /// Returns whether or not the set is empty
-    fn is_empty(&self) -> bool;
-}
-
 /// Splits the set
 pub trait Split<T>: Sized {
     /// Splits the set

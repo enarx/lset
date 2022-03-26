@@ -32,6 +32,24 @@ impl<T, U> Span<T, U> {
     pub const fn new(start: T, count: U) -> Self {
         Self { start, count }
     }
+
+    /// Indicates whether the span is empty
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use lset::*;
+    /// assert!(Span::from(2..2).is_empty());
+    /// assert!(!Span::from(2..3).is_empty());
+    /// ```
+    #[inline(always)]
+    pub fn is_empty(&self) -> bool
+    where
+        T: Copy + PartialEq + Add<U, Output = T>,
+        U: Copy,
+    {
+        self.start + self.count == self.start
+    }
 }
 
 impl<T, U> Span<T, U>
@@ -351,17 +369,6 @@ where
     }
 }
 
-impl<T, U, V> Empty for Span<T, U>
-where
-    T: PartialOrd<V> + Add<U, Output = V> + Clone,
-    U: Clone,
-{
-    #[inline(always)]
-    fn is_empty(&self) -> bool {
-        self.start == self.start.clone() + self.count.clone()
-    }
-}
-
 impl<T, U> Split<Self> for Span<T, U>
 where
     Self: Into<Line<T>>,
@@ -423,12 +430,6 @@ where
 mod test {
     use super::*;
 
-    macro_rules! x {
-        ($range:expr) => {
-            Span::from($range)
-        };
-    }
-
     #[test]
     fn convert() {
         let range = 2..3;
@@ -440,11 +441,5 @@ mod test {
 
         assert_eq!(line, span.into());
         assert_eq!(span, line.into());
-    }
-
-    #[test]
-    fn is_empty() {
-        assert!(x!(2..2).is_empty());
-        assert!(!x!(2..3).is_empty());
     }
 }
