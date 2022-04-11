@@ -8,8 +8,14 @@
 //! that are actually used.
 
 #![no_std]
-#![deny(clippy::all)]
-#![deny(missing_docs)]
+#![forbid(unsafe_code, clippy::expect_used, clippy::panic)]
+#![deny(
+    rust_2018_idioms,
+    unused_lifetimes,
+    unused_qualifications,
+    clippy::all,
+    missing_docs
+)]
 
 mod line;
 mod span;
